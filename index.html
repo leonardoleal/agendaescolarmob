@@ -1,41 +1,98 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <meta name="format-detection" content="telephone=no" />
-        <meta name="msapplication-tap-highlight" content="no" />
-        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-        <link rel="stylesheet" type="text/css" href="css/jquery.mobile-1.4.5.min.css" />
-        <title>Hello World</title>
-        <script type="text/javascript" src="cordova.js"></script>
-        <script src="js/jquery-2.1.3.min.js"></script>
-        <script src="js/jquery.mobile-1.4.5.min.js"></script>
-    </head>
-    <body onload="getData()">
-        <div data-role="header">
-            <h1>Agenda Escolar</h1>
-        </div>
-        <div id="content" class="ui-content">
-            <ul data-role="listview" id="mensagens"></ul>
-        </div>
-        <script type="text/javascript">
-          function init () {
-            document.addEventListener('deviceready', getData, false);
-          }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+    <link rel="stylesheet" type="text/css" href="css/jquery.mobile-1.4.5.min.css" />
+    <title>Hello World</title>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script src="js/jquery-2.1.3.min.js"></script>
+    <script src="js/jquery.mobile-1.4.5.min.js"></script>
+  </head>
+  <body onload="getData()" class="ui-mobile-viewport ui-overlay-a">
 
-          function getData(){
-            $.ajax("http://agendaescolar.lealweb.com.br/index.php?file=mensagem")
-            .done(function(data){
-                $.each(data, function(i, mensagem){
-                  $('.ui-content ul').append(
-                      $('<li>').append(
-                          $("<a href='#'> " + mensagem.assunto + "</a>")
-                  ));
-                });
-                $('#mensagens').listview().listview('refresh');
-            });
-          }
-        </script>
-    </body>
+      <!--/Page Home/-->
+      <div data-role="page" id="pageone" style="background-color: white;" data-url="pageone" tabindex="" class="ui-page ui-page-theme-a ui-page-active">
+        
+        <!--/Cabeçalho Home/-->
+        <div data-role="header">
+          <h1>Agenda Escolar</h1>
+        </div>
+
+         <!--/Lista de Mensagens/-->
+        <div data-role="main" class="ui-content">
+          <!--<div id="content" class="ui-content">
+              <ul data-role="listview" id="mensagens"></ul>
+          </div>-->
+
+          <!--/Campo procura/-->
+          <form class="ui-filterable">
+            <input id="myFilter" data-type="search">
+          </form>
+
+          <ul id="mensagens" data-role="listview" data-inset="true" data-filter="true" data-input="#myFilter">
+            <li data-role="divider">Quadro de Mensagens/Eventos</li>
+          </ul>
+        </div>
+        <!--/Rodapé Home/-->
+        <div data-role="footer"  data-fullscreen="true">
+         <div data-role="navbar">
+            <ul>
+              <li><a href="#" data-icon="back">Voltar</a></li>        
+              <li><a href="#" data-icon="delete">Deletar</a></li>        
+              <li><a href="#" data-icon="info">Detalhes</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div data-role="page" id="msg_1" data-dialog="false"  >
+        <div data-role="header" >
+          <h1>Agenda Escolar</h1>
+        </div>
+        <div data-role="main" class="ui-content" data-fullscreen="true">
+          <h3>Início das Aulas</h3>
+          <ul data-role="listview" data-inset="true" data-add-back-btn="true" >
+            <li>Professora: Helena</li>
+            <li>Data: 01/01/2015</li>   
+          </ul>
+          <p>
+            O ano letivo 2015 na rede Estadual de ensino começa no dia 27 e terá 203 dias. O calendário escolar foi divulgado pela Secretaria Estadual de Educação, Cultura e Desportos (SEED), em outubro do ano passado.
+
+            De acordo com o documento, o primeiro bimestre terá 53 dias e será de 27 de janeiro a 14 de abril. Já o segundo bimestre será de 15 de abril a 30 de junho, contabilizando 49 dias letivos.
+
+            O recesso escolar está programado para o período que vai de 1° a 15 de julho. O terceiro bimestre será de 20 de julho a 29 de setembro com um total de 51 dias.
+
+            O fim do ano letivo de 2015 começa no dia 30 de setembro e termina em 16 de dezembro, com 50 dias. Os alunos que ficarem para a recuperação final terão o período de 23 de dezembro a 22 de janeiro para regularizem suas situações, mesmo período de férias dos docentes.
+            No total, o primeiro semestre terá 102 dias e o segundo, 101, totalizando os 203 dias letivos.
+          </p>
+          <a href="#" class="ui-btn ui-btn-inline ui-btn-b ui-shadow ui-corner-all ui-icon-back ui-btn-icon-left ui-btn-inline ui-mini" data-rel="back">Voltar</a>
+        </div>
+      </div> 
+      <script type="text/javascript">
+        function init () {
+          document.addEventListener('deviceready', getData, false);
+        }
+
+        function getData(){
+          $.ajax("http://agendaescolar.lealweb.com.br/index.php?file=mensagem")
+          .done(function(data){
+              $.each(data, function(i, mensagem){
+                $('#mensagens').append(
+                    $('<li>').append(
+                        $("<a href='#msg_1'>").append(
+                          $("<img src='css/images/icons-png/book-icon.png' class='ui-li-icon' data-transition='slide'> "+
+                              "<h2>"+mensagem.assunto+"</h2>"+
+                              "<p>"+mensagem.mensagem+"</p>")
+                            )
+                          )
+                        );
+              });
+            $('#mensagens').listview().listview('refresh');
+          });
+        }
+      </script>
+  </body>
 </html>
