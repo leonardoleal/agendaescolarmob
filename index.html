@@ -7,12 +7,12 @@
     <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
     <link rel="stylesheet" type="text/css" href="css/jquery.mobile-1.4.5.min.css" />
-    <title>Hello World</title>
+    <title>Agenda Escolar</title>
     <script type="text/javascript" src="cordova.js"></script>
     <script src="js/jquery-2.1.3.min.js"></script>
     <script src="js/jquery.mobile-1.4.5.min.js"></script>
   </head>
-  <body onload="getData()" class="ui-mobile-viewport ui-overlay-a">
+  <body onload="init()" class="ui-mobile-viewport ui-overlay-a">
 
       <!--/Page Home/-->
       <div data-role="page" id="pageone" style="background-color: white;" data-url="pageone" tabindex="" class="ui-page ui-page-theme-a ui-page-active">
@@ -24,9 +24,6 @@
 
          <!--/Lista de Mensagens/-->
         <div data-role="main" class="ui-content">
-          <!--<div id="content" class="ui-content">
-              <ul data-role="listview" id="mensagens"></ul>
-          </div>-->
 
           <!--/Campo procura/-->
           <form class="ui-filterable">
@@ -71,28 +68,6 @@
           <a href="#" class="ui-btn ui-btn-inline ui-btn-b ui-shadow ui-corner-all ui-icon-back ui-btn-icon-left ui-btn-inline ui-mini" data-rel="back">Voltar</a>
         </div>
       </div> 
-      <script type="text/javascript">
-        function init () {
-          document.addEventListener('deviceready', getData, false);
-        }
-
-        function getData(){
-          $.ajax("http://agendaescolar.lealweb.com.br/index.php?file=mensagem")
-          .done(function(data){
-              $.each(data, function(i, mensagem){
-                $('#mensagens').append(
-                    $('<li>').append(
-                        $("<a href='#msg_1'>").append(
-                          $("<img src='css/images/icons-png/book-icon.png' class='ui-li-icon' data-transition='slide'> "+
-                              "<h2>"+mensagem.assunto+"</h2>"+
-                              "<p>"+mensagem.mensagem+"</p>")
-                            )
-                          )
-                        );
-              });
-            $('#mensagens').listview().listview('refresh');
-          });
-        }
-      </script>
+      <script type="text/javascript" src="js/main.js"></script>
   </body>
 </html>
