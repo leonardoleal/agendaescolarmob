@@ -6,10 +6,12 @@ var db;
 
 function deviceready(){
   db = window.openDatabase("agenda", "1.0", "agenda", 1000000);
-  db.transaction(setup, errorHandler, getDataFromUrl());
+  db.transaction(setupDatabase, errorHandler, getDataFromUrl());
 }
 
-function setup(tx){
+function setupDatabase(tx){
+  tx.executeSql('create table if not exists usuario ' +
+    '(idUsuario INTEGER, usuario TEXT, senha TEXT, token TEXT)');
   tx.executeSql('create table if not exists mensagens ' +
       '(idMensagem INTEGER PRIMARY KEY, assunto TEXT, mensagem TEXT, dataEnvio DATE, horaEnvio TIME)');
 }
