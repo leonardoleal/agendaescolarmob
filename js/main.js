@@ -1,15 +1,29 @@
-$('#login').submit(function(event){
-  var postData = JSON.parse('{ "usuario": "'+$('#usuario').val()+'", "senha": "'+$('#senha').val()+'"}');
-  console.log(postData);
+$('#login').submit(function(e){
+  e.preventDefault();
+  $.mobile.loading('show');
   $.ajax({
     url: "http://agendaescolar.lealweb.com.br/servicoSessao/validarUsuario",
     type: 'POST',
-    data: { "usuario": $('#usuario').val(), "senha": +$('#senha').val()},
+    dataType: 'text',
+    contentType: 'application/x-www-form-urlencoded',
+    data: $(this).serialize(),
     success: function(data){
       console.log(data);
+      try{
+        var data_obj = JSON.parse(data);
+      }catch(err){
+        var data_obj = data;
+      }
+      $.mobile.loading('hide');
+      if (data_obj.hasOwnProperty('token')) {
+        $.mobile.changePage("#pageone");
+      }else{
+        $.mobile.changePage('#erroLogin', 'pop', true, true);
+      };
     },
     error: function(xhr, status, error){
-      alert(error.message);
+      $.mobile.loading('hide');
+      console.log(error.message);
     }
   });
 });
