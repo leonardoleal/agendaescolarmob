@@ -16,6 +16,20 @@ function setupDatabase(tx){
       '(idMensagem INTEGER PRIMARY KEY, assunto TEXT, mensagem TEXT, dataEnvio DATE, horaEnvio TIME)');
 }
 
+function login(){
+  $.ajax({
+    url: "",
+    type: 'POST'
+  });
+}
+
+function sendToken(token){
+  $.ajax({
+    url: "",
+    type: 'POST'
+  });
+}
+
 function errorHandler(e){
   alert(e.message);
 }
