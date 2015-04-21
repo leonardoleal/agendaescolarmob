@@ -1,3 +1,19 @@
+$('#login').submit(function(event){
+  var postData = JSON.parse('{ "usuario": "'+$('#usuario').val()+'", "senha": "'+$('#senha').val()+'"}');
+  console.log(postData);
+  $.ajax({
+    url: "http://agendaescolar.lealweb.com.br/servicoSessao/validarUsuario",
+    type: 'POST',
+    data: { "usuario": $('#usuario').val(), "senha": +$('#senha').val()},
+    success: function(data){
+      console.log(data);
+    },
+    error: function(xhr, status, error){
+      alert(error.message);
+    }
+  });
+});
+
 function init(){
   document.addEventListener('deviceready', deviceready, true);
 }
