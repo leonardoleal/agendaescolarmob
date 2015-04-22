@@ -1,3 +1,20 @@
+function init(){
+  document.addEventListener('deviceready', deviceready, true);
+}
+
+var db;
+
+function deviceready(){
+  db = window.openDatabase("agenda", "1.0", "agenda", 1000000);
+  db.transaction(setupDatabase, errorHandler);
+}
+
+function setupDatabase(tx){
+  //tx.executeSql('drop table if exists usuario;');
+  tx.executeSql('CREATE TABLE IF NOT EXISTS user (idUsuario INTEGER, usuario TEXT, senha TEXT, token TEXT);');
+  tx.executeSql('create table if not exists mensagens (idMensagem INTEGER PRIMARY KEY, assunto TEXT, mensagem TEXT, dataEnvio DATE, horaEnvio TIME);');
+}
+
 $('#login').submit(function(e){
   e.preventDefault();
   $.mobile.loading('show');
@@ -14,10 +31,13 @@ $('#login').submit(function(e){
       }catch(err){
         var data_obj = data;
       }
-      $.mobile.loading('hide');
       if (data_obj.hasOwnProperty('token')) {
+        hasToken(data_obj);
+        $.mobile.loading('hide');
         $.mobile.changePage("#pageone");
+        sendToken(data_obj.token);
       }else{
+        $.mobile.loading('hide');
         $.mobile.changePage('#erroLogin', 'pop', true, true);
       };
     },
@@ -28,59 +48,50 @@ $('#login').submit(function(e){
   });
 });
 
-function init(){
-  document.addEventListener('deviceready', deviceready, true);
-}
-
-var db;
-
-function deviceready(){
-  db = window.openDatabase("agenda", "1.0", "agenda", 1000000);
-  db.transaction(setupDatabase, errorHandler, getDataFromUrl());
-}
-
-function setupDatabase(tx){
-  tx.executeSql('create table if not exists usuario ' +
-    '(idUsuario INTEGER, usuario TEXT, senha TEXT, token TEXT)');
-  tx.executeSql('create table if not exists mensagens ' +
-      '(idMensagem INTEGER PRIMARY KEY, assunto TEXT, mensagem TEXT, dataEnvio DATE, horaEnvio TIME)');
-}
-
-function login(){
-  $.ajax({
-    url: "",
-    type: 'POST'
-  });
+function hasToken(user){
+  db.transaction(function(tx){
+    tx.executeSql("SELECT * FROM user WHERE idUsuario = ?;", [user.idPessoa], 
+      function(tx, res){
+        //alert("Registros: " + res.rows.length);
+        if (res.rows.length > 0) {
+          for (var i = 0; i < res.rows.length; i++) {
+            alert(res.rows.item(i).token);
+            updateUser(res.rows.item(i));
+          }
+        }else{
+          insertUser(user);
+        }
+      }, errorHandler);
+  }, errorHandler);
 }
 
 function sendToken(token){
-  $.ajax({
-    url: "",
-    type: 'POST'
-  });
-}
-
-function errorHandler(e){
-  alert(e.message);
-}
-
-function getDataFromUrl(){
-  $.ajax("http://agendaescolar.lealweb.com.br/index.php?file=mensagem")
-  .done(function(data){
-    $.each(data, function(i, mensagem){
-      getDataFromDB(mensagem);
+  $.ajax("http://agendaescolar.lealweb.com.br/servicoMensagem/consultaPorResponsavel/"+token)
+    .done(function(data){
+      try{
+        var data_obj = JSON.parse(data);
+      }catch(err){
+        var data_obj = data;
+      }
+      if (data_obj.hasOwnProperty('msg')) {
+        alert('token invalido');
+      }else{
+        $.each(data_obj, function(i, msg){
+          insertData(msg);
+        });
+        getDataFromDB();
+      }
     });
-  });
 }
 
-function getDataFromDB(msg){
+function getDataFromDB(){
 	db.transaction(function(tx){
-      tx.executeSql("select * from mensagens where idMensagem = ?;", [msg.idMensagem], 
+      tx.executeSql("SELECT * FROM mensagens;", [], 
         function(tx, results){
           if (results.rows.length > 0) {
-            setMsgToHtml(results.rows.item(0));
-          }else{
-            insertData(msg);
+            for (var i = 0; i < results.rows.length; i++) {
+              setMsgToHtml(results.rows.item(i));
+            };
           }
         }, errorHandler);
     }, errorHandler);
@@ -96,14 +107,31 @@ function setMsgToHtml(mensagem){
         )
       )
     )
-  );
-  $('#mensagens').listview().listview('refresh');
+  ).listview().listview('refresh');
 }
 
 function insertData(msg){
 	db.transaction(function(tx){
-		tx.executeSql("insert into mensagens(idMensagem, assunto, mensagem) "+
-			"values(?,?,?)", [msg.idMensagem, msg.assunto,msg.mensagem]);
+		tx.executeSql("insert into mensagens(idMensagem, assunto, mensagem) values(?,?,?)", [msg.idMensagem, msg.assunto,msg.mensagem]);
 	}, errorHandler);
-  setMsgToHtml(msg);
 }
+
+function updateUser(user){
+  db.transaction(function(tx){
+    tx.executeSql("UPDATE user SET token = ? WHERE idUsuario = ?;",
+      [user.token, user.idPessoa], errorHandler, function() { alert('row updated');});
+  }, errorHandler);
+}
+
+function insertUser(user){
+  db.transaction(function(tx){
+    tx.executeSql("INSERT INTO user (idUsuario, usuario, senha, token) VALUES (?,?,?,?);",
+      [user.idPessoa, user.usuario, user.senha, user.token], nullHandler, errorHandler);
+  });
+}
+
+function errorHandler(tx, e){
+  alert(e.message);
+}
+
+function nullHandler(){};
