@@ -13,6 +13,7 @@ function setupDatabase(tx){
   //tx.executeSql('drop table if exists usuario;');
   tx.executeSql('CREATE TABLE IF NOT EXISTS user (idUsuario INTEGER, usuario TEXT, senha TEXT, token TEXT);');
   tx.executeSql('create table if not exists mensagens (idMensagem INTEGER PRIMARY KEY, assunto TEXT, mensagem TEXT, dataEnvio DATE, horaEnvio TIME);');
+  getCurrentToken();
 }
 
 $('#login').submit(function(e){
@@ -63,6 +64,28 @@ function hasToken(user){
         }
       }, errorHandler);
   }, errorHandler);
+}
+
+function getCurrentToken(){
+  var token;
+  db.transaction(function(tx){
+    tx.executeSql("SELECT * FROM user LIMIT 1", [], 
+      function(tx, res){
+        if (res.rows.length > 0) {
+          token = res.rows.item(0).token;
+        }else{
+          //alert("nadinha");
+        }
+        if (token) {
+          $.mobile.changePage("#pageone");
+          //sendToken(token);
+          getDataFromDB();
+        }else{
+          $.mobile.changePage("#pagelogin");
+        };
+      }, errorHandler);
+  }, errorHandler);
+  return token;
 }
 
 function sendToken(token){
