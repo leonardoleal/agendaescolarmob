@@ -10,9 +10,10 @@ function deviceready(){
 }
 
 function setupDatabase(tx){
-  //tx.executeSql('drop table if exists usuario;');
-  tx.executeSql('CREATE TABLE IF NOT EXISTS user (idUsuario INTEGER, usuario TEXT, senha TEXT, token TEXT);');
-  tx.executeSql('create table if not exists mensagens (idMensagem INTEGER PRIMARY KEY, assunto TEXT, mensagem TEXT, dataEnvio DATE, horaEnvio TIME);');
+  //tx.executeSql('drop table if exists user;');
+  //tx.executeSql('drop table if exists mensagens;');
+  tx.executeSql('CREATE TABLE IF NOT EXISTS user (idUsuario INTEGER, usuario TEXT, senha TEXT, token TEXT, ultimoLogin TEXT);');
+  tx.executeSql('create table if not exists mensagens (idMensagem INTEGER PRIMARY KEY, idUsuario INTEGER, assunto TEXT, mensagem TEXT, dataEnvio DATE, horaEnvio TIME);');
   getCurrentToken();
 }
 
@@ -36,7 +37,7 @@ $('#login').submit(function(e){
         hasToken(data_obj);
         $.mobile.loading('hide');
         $.mobile.changePage("#pageone");
-        sendToken(data_obj.token);
+        sendToken(data_obj.token, data_obj.idPessoa);
       }else{
         $.mobile.loading('hide');
         $.mobile.changePage('#erroLogin', 'pop', true, true);
@@ -56,7 +57,6 @@ function hasToken(user){
         //alert("Registros: " + res.rows.length);
         if (res.rows.length > 0) {
           for (var i = 0; i < res.rows.length; i++) {
-            alert(res.rows.item(i).token);
             updateUser(res.rows.item(i));
           }
         }else{
@@ -69,26 +69,34 @@ function hasToken(user){
 function getCurrentToken(){
   var token;
   db.transaction(function(tx){
-    tx.executeSql("SELECT * FROM user LIMIT 1", [], 
+    tx.executeSql("SELECT * FROM user ORDER BY ultimoLogin DESC", [], 
       function(tx, res){
         if (res.rows.length > 0) {
           token = res.rows.item(0).token;
         }else{
           //alert("nadinha");
         }
-        if (token) {
-          $.mobile.changePage("#pageone");
-          //sendToken(token);
-          getDataFromDB();
-        }else{
-          $.mobile.changePage("#pagelogin");
-        };
+        try {
+          if (token) {
+            $.mobile.changePage("#pageone");
+            //document.location.hash = "#pageone";
+            sendToken(token, res.rows.item(0).idUsuario);
+            getDataFromDB(res.rows.item(0).idUsuario);
+          }else{
+            $.mobile.changePage("#pagelogin");
+            //document.location.hash = "#pagelogin";
+          }
+        } catch (exception) {
+
+        } finally {
+            //$.mobile.initializePage();
+        }
       }, errorHandler);
   }, errorHandler);
   return token;
 }
 
-function sendToken(token){
+function sendToken(token, idUsuario){
   $.ajax("http://agendaescolar.lealweb.com.br/servicoMensagem/consultaPorResponsavel/"+token)
     .done(function(data){
       try{
@@ -100,16 +108,17 @@ function sendToken(token){
         alert('token invalido');
       }else{
         $.each(data_obj, function(i, msg){
-          insertData(msg);
+          insertData(msg, idUsuario);
         });
         getDataFromDB();
       }
     });
 }
 
-function getDataFromDB(){
+function getDataFromDB(idUsuario){
+  alert(idUsuario);
 	db.transaction(function(tx){
-      tx.executeSql("SELECT * FROM mensagens;", [], 
+      tx.executeSql("SELECT * FROM mensagens WHERE idUsuario = ?;", [idUsuario], 
         function(tx, results){
           if (results.rows.length > 0) {
             for (var i = 0; i < results.rows.length; i++) {
@@ -133,23 +142,23 @@ function setMsgToHtml(mensagem){
   ).listview().listview('refresh');
 }
 
-function insertData(msg){
+function insertData(msg, idUsuario){
 	db.transaction(function(tx){
-		tx.executeSql("insert into mensagens(idMensagem, assunto, mensagem) values(?,?,?)", [msg.idMensagem, msg.assunto,msg.mensagem]);
+		tx.executeSql("insert into mensagens(idMensagem, assunto, mensagem, idUsuario) values(?,?,?,?)", [msg.idMensagem, msg.assunto,msg.mensagem, idUsuario]);
 	}, errorHandler);
 }
 
 function updateUser(user){
   db.transaction(function(tx){
-    tx.executeSql("UPDATE user SET token = ? WHERE idUsuario = ?;",
-      [user.token, user.idPessoa], errorHandler, function() { alert('row updated');});
+    tx.executeSql("UPDATE user SET token = ?, ultimoLogin = ? WHERE idUsuario = ?;",
+      [user.token, new Date().getTime(), user.idPessoa], errorHandler, function() { alert('row updated');});
   }, errorHandler);
 }
 
 function insertUser(user){
   db.transaction(function(tx){
-    tx.executeSql("INSERT INTO user (idUsuario, usuario, senha, token) VALUES (?,?,?,?);",
-      [user.idPessoa, user.usuario, user.senha, user.token], nullHandler, errorHandler);
+    tx.executeSql("INSERT INTO user (idUsuario, usuario, senha, token, ultimoLogin) VALUES (?,?,?,?,?);",
+      [user.idPessoa, user.usuario, user.senha, user.token, new Date().getTime()], nullHandler, errorHandler);
   });
 }
 

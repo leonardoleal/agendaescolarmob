@@ -14,11 +14,11 @@
     <script src="js/jquery-2.1.3.min.js"></script>
     <script src="js/jquery.mobile-1.4.5.min.js"></script>
     <style>
-    .ui-header .ui-title {
-        margin-right: 0px;
-        margin-left: 0px;
-    }
-</style>
+      .ui-header .ui-title {
+          margin-right: 0px;
+          margin-left: 0px;
+      }
+    </style>
   </head>
   <body onload="init()" class="ui-mobile-viewport ui-overlay-a">
 
@@ -26,7 +26,7 @@
     <div data-role="page" id="pagelogin"> 
       <!--Primeira página Formulário--> 
       <!--Primeira Cabeçalho-->
-      <div data-role="header">
+      <div data-role="header" data-position="fixed">
         <h2>Agenda Escolar</h2>
       </div>
       <!--Primeira página com conteúdo-->
@@ -61,7 +61,7 @@
         </ul>
       </div>
       <!--/Rodapé Home/-->
-      <div data-role="footer"  data-fullscreen="true">
+      <div data-role="footer"  data-fullscreen="true" data-position="fixed">
         <div data-role="navbar">
           <ul>
             <li><a href="#pagelogin" data-icon="back">Voltar</a></li>
