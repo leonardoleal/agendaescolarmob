@@ -13,12 +13,15 @@ function setupDatabase(tx){
   //tx.executeSql('drop table if exists user;');
   //tx.executeSql('drop table if exists mensagens;');
   tx.executeSql('CREATE TABLE IF NOT EXISTS user (idUsuario INTEGER, usuario TEXT, senha TEXT, token TEXT, ultimoLogin TEXT);');
-  tx.executeSql('create table if not exists mensagens (idMensagem INTEGER PRIMARY KEY, idUsuario INTEGER, assunto TEXT, mensagem TEXT, dataEnvio DATE, horaEnvio TIME);');
+  //tx.executeSql('create table if not exists mensagens (idMensagem INTEGER PRIMARY KEY, idUsuario INTEGER, assunto TEXT, mensagem TEXT, dataEnvio DATE, horaEnvio TIME);');
+  //sem primary key
+  tx.executeSql('create table if not exists mensagens (idMensagem INTEGER, idUsuario INTEGER, assunto TEXT, mensagem TEXT, dataEnvio DATE, horaEnvio TIME);');
   getCurrentToken();
 }
 
 $('#login').submit(function(e){
   e.preventDefault();
+  cleanList();
   $.mobile.loading('show');
   $.ajax({
     url: "http://agendaescolar.lealweb.com.br/servicoSessao/validarUsuario",
@@ -91,9 +94,9 @@ function getCurrentToken(){
         } finally {
             //$.mobile.initializePage();
         }
-      }, errorHandler);
+      });
   }, errorHandler);
-  return token;
+  //return token;
 }
 
 function sendToken(token, idUsuario){
@@ -108,22 +111,24 @@ function sendToken(token, idUsuario){
         alert('token invalido');
       }else{
         $.each(data_obj, function(i, msg){
+          //console.log(msg);
           insertData(msg, idUsuario);
         });
-        getDataFromDB();
+        getDataFromDB(idUsuario);
       }
     });
 }
 
 function getDataFromDB(idUsuario){
-  alert(idUsuario);
-	db.transaction(function(tx){
+  db.transaction(function(tx){
       tx.executeSql("SELECT * FROM mensagens WHERE idUsuario = ?;", [idUsuario], 
         function(tx, results){
           if (results.rows.length > 0) {
             for (var i = 0; i < results.rows.length; i++) {
               setMsgToHtml(results.rows.item(i));
             };
+          }else{
+            alert("nenhuma msg para este id");
           }
         }, errorHandler);
     }, errorHandler);
@@ -132,10 +137,10 @@ function getDataFromDB(idUsuario){
 function setMsgToHtml(mensagem){
   $('#mensagens').append(
     $('<li>').append(
-      $("<a href='#msg_1' data-transition='slide'>").append(
+      $("<a href='#msg' data-transition='slide' id="+mensagem.idMensagem+">").append(
         $("<img src='css/images/icons-png/book-icon.png' class='ui-li-icon'> "+
           "<h2>"+mensagem.assunto+"</h2>"+
-          "<p>"+mensagem.mensagem+"</p>"
+          "<p style='tex-align: left !important;'>"+mensagem.mensagem+"</p>"
         )
       )
     )
@@ -143,9 +148,11 @@ function setMsgToHtml(mensagem){
 }
 
 function insertData(msg, idUsuario){
-	db.transaction(function(tx){
-		tx.executeSql("insert into mensagens(idMensagem, assunto, mensagem, idUsuario) values(?,?,?,?)", [msg.idMensagem, msg.assunto,msg.mensagem, idUsuario]);
-	}, errorHandler);
+  console.log(idUsuario);
+  console.log(msg);
+  db.transaction(function(tx){
+    tx.executeSql("insert into mensagens(idMensagem, assunto, mensagem, idUsuario) values(?,?,?,?)", [msg.idMensagem, msg.assunto, msg.mensagem, idUsuario]);
+  }, errorHandler);
 }
 
 function updateUser(user){
@@ -162,8 +169,36 @@ function insertUser(user){
   });
 }
 
-function errorHandler(tx, e){
+function errorHandler(e){
   alert(e.message);
 }
 
 function nullHandler(){};
+
+function cleanList () {
+  $('#mensagens .ui-li-has-icon').remove().listview().listview('refresh');
+}
+
+$('#mensagens').on( "click", "a", function() {
+  var idMensagem = $(this).attr('id');
+  showMessage(idMensagem);
+});
+
+function showMessage(idMensagem){
+  db.transaction(function(tx){
+      tx.executeSql("SELECT * FROM mensagens WHERE idMensagem = ?;", [idMensagem], 
+        function(tx, results){
+          if (results.rows.length > 0) {
+            $('#msg #cabecalho_mensagem li').remove().listview().listview('refresh');
+            $('#msg #cabecalho_mensagem').append("<li>Professora: Helena</li>").listview().listview('refresh');
+            $('#msg #cabecalho_mensagem').append("<li>Data: 01/01/2015</li>").listview().listview('refresh');
+            for (var i = 0; i < results.rows.length; i++) {
+              $('#msg #assunto').text(results.rows.item(i).assunto);
+              $('#msg p').text(results.rows.item(i).mensagem);
+            };
+          }else{
+            alert("nenhuma msg para este id");
+          }
+        }, errorHandler);
+    }, errorHandler);
+}

@@ -47,11 +47,10 @@
     <div data-role="page" id="pageone"> 
       <!--/Lista de Mensagens/--> 
       <!--Segundo Cabeçalho-->
-      <div data-role="header">
+      <div data-role="header" data-position="fixed">
         <h1>Agenda Escolar</h1>
       </div>
-      <div data-role="main" class="ui-content"> 
-        
+      <div data-role="main" class="ui-content">
         <!--/Campo procura/-->
         <form class="ui-filterable">
           <input id="myFilter" data-type="search"/>
@@ -71,12 +70,18 @@
         </div>
       </div>
     </div>
-    <div data-role="page" id="msg_1" data-dialog="false"  >
+    <div data-role="page" id="msg" data-dialog="false"  >
       <div data-role="header" >
         <h1>Agenda Escolar</h1>
       </div>
       <div data-role="main" class="ui-content" data-fullscreen="true">
       <!-- Texto Mensagem --> 
+        <h3 id="assunto">Assunto</h3>
+        <ul data-role="listview" data-inset="true" data-add-back-btn="true" id="cabecalho_mensagem">
+        </ul>
+        <p>
+          Texto.
+        </p>
         <a href="#" class="ui-btn ui-btn-inline ui-btn-b ui-shadow ui-corner-all ui-icon-back ui-btn-icon-left ui-btn-inline ui-mini" data-rel="back">Voltar</a> </div>
     </div>
 
