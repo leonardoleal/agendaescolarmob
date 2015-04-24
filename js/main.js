@@ -139,8 +139,7 @@ function setMsgToHtml(mensagem){
     $('<li>').append(
       $("<a href='#msg' data-transition='slide' id="+mensagem.idMensagem+">").append(
         $("<img src='css/images/icons-png/book-icon.png' class='ui-li-icon'> "+
-          "<h2>"+mensagem.assunto+"</h2>"+
-          "<p style='tex-align: left !important;'>"+mensagem.mensagem+"</p>"
+          "<h2>"+mensagem.assunto+"</h2>"
         )
       )
     )
