@@ -27,7 +27,7 @@ function hasToken(user){
         }else{
           insertUser(user);
         }
-      }, errorHandler);
+      });
   }, errorHandler);
 }
 
@@ -46,7 +46,7 @@ function getCurrentToken(){
             $.mobile.changePage("#pageone");
             //document.location.hash = "#pageone";
             sendToken(token, res.rows.item(0).idUsuario);
-            getDataFromDB(res.rows.item(0).idUsuario);
+            //getDataFromDB(res.rows.item(0).idUsuario);
           }else{
             $.mobile.changePage("#pagelogin");
             //document.location.hash = "#pagelogin";
@@ -85,7 +85,7 @@ function saveMessage(msg, idUsuario){
 function updateUser(user){
   db.transaction(function(tx){
     tx.executeSql("UPDATE user SET token = ?, ultimoLogin = ? WHERE idUsuario = ?;",
-      [user.token, new Date().getTime(), user.idPessoa], errorHandler, function() { alert('row updated');});
+      [user.token, new Date().getTime(), user.idUsuario], function(){return false}, errorHandler);
   }, errorHandler);
 }
 
@@ -108,8 +108,6 @@ function showMessage(idMensagem){
               $('#msg #assunto').text(results.rows.item(i).assunto);
               $('#msg p').text(results.rows.item(i).mensagem);
             };
-          }else{
-            alert("nenhuma msg para este id");
           }
         }, errorHandler);
     }, errorHandler);

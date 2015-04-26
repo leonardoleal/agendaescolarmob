@@ -9,6 +9,7 @@ $('#login').submit(function(e){
     contentType: 'application/x-www-form-urlencoded',
     data: $(this).serialize(),
     success: function(data){
+      console.log(data);
       try{
         var data_obj = JSON.parse(data);
       }catch(err){
@@ -31,21 +32,44 @@ $('#login').submit(function(e){
   });
 });
 
+function sendReceivedMessages(token, messages){
+  $.ajax({
+    url: "http://agendaescolar.lealweb.com.br/servicoMensagem/alterarStatusMensagem/" + token,
+    type: 'POST',
+    dataType: 'text',
+    contentType: 'application/x-www-form-urlencoded',
+    data: { idMensagem: messages, status: 'recebido' },
+    success: function(data){
+      console.log(data);
+    },
+    error: function(xhr, status, error){
+      console.log(error.message);
+    }
+  });
+}
+
 function sendToken(token, idUsuario){
-  $.ajax("http://agendaescolar.lealweb.com.br/servicoMensagem/consultaPorResponsavel/"+token)
-    .done(function(data){
-      try{
-        var data_obj = JSON.parse(data);
-      }catch(err){
-        var data_obj = data;
-      }
-      if (data_obj.hasOwnProperty('msg')) {
-        alert('token invalido');
-      }else{
-        $.each(data_obj, function(i, msg){
-          saveMessage(msg, idUsuario);
-        });
-        getDataFromDB(idUsuario);
-      }
-    });
+  var messages = [];
+  $.ajax({
+    url: "http://agendaescolar.lealweb.com.br/servicoMensagem/consultaPorResponsavel/"+token,
+    dataType: 'html'
+  }).done(function(data){
+    try{
+      var data_obj = JSON.parse(data);
+    }catch(err){
+      var data_obj = data;
+    }
+    if (typeof(data_obj) == "string") {
+      //alert('token invalido');
+    }else{
+      $.each(data_obj, function(i, msg){
+        saveMessage(msg, idUsuario);
+        messages.push(msg.idMensagem);
+      });
+    }
+    getDataFromDB(idUsuario);
+    if(messages.length > 0){
+      sendReceivedMessages(token, messages);
+    }
+  });
 }
