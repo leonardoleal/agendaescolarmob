@@ -46,7 +46,7 @@ function getCurrentToken(){
             $.mobile.changePage("#pageone");
             //document.location.hash = "#pageone";
             sendToken(token, res.rows.item(0).idUsuario);
-            //getDataFromDB(res.rows.item(0).idUsuario);
+            scheduleRequest(token, res.rows.item(0).idUsuario);
           }else{
             $.mobile.changePage("#pagelogin");
             //document.location.hash = "#pagelogin";
@@ -69,8 +69,6 @@ function getDataFromDB(idUsuario){
             for (var i = 0; i < results.rows.length; i++) {
               setMsgToHtml(results.rows.item(i));
             };
-          }else{
-            alert("nenhuma msg para este id");
           }
         });
     }, errorHandler);

@@ -23,6 +23,14 @@ $('#mensagens').on( "click", "a", function() {
   showMessage(idMensagem);
 });
 
+function scheduleRequest(token, idUsuario){
+  window.clearInterval(1);
+  setInterval(function(){
+    console.log("buscando novas mensagens");
+    sendToken(token, idUsuario);
+  }, 50000);
+}
+
 //DB callback functions
 function errorHandler(e){
   alert(e.message);

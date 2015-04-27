@@ -19,7 +19,10 @@ $('#login').submit(function(e){
         hasToken(data_obj);
         $.mobile.loading('hide');
         $.mobile.changePage("#pageone");
+        $('#login #usuario').val('');
+        $('#login #senha').val('');
         sendToken(data_obj.token, data_obj.idPessoa);
+        scheduleRequest(data_obj.token, data_obj.idPessoa);
       }else{
         $.mobile.loading('hide');
         $.mobile.changePage('#erroLogin', 'pop', true, true);
@@ -67,6 +70,7 @@ function sendToken(token, idUsuario){
         messages.push(msg.idMensagem);
       });
     }
+    cleanList();
     getDataFromDB(idUsuario);
     if(messages.length > 0){
       sendReceivedMessages(token, messages);
