@@ -22,6 +22,7 @@ $('#login').submit(function(e){
         $('#login #usuario').val('');
         $('#login #senha').val('');
         sendToken(data_obj.token, data_obj.idPessoa);
+        cleanSchedule();
         scheduleRequest(data_obj.token, data_obj.idPessoa);
       }else{
         $.mobile.loading('hide');
@@ -66,6 +67,7 @@ function sendToken(token, idUsuario){
       //alert('token invalido');
     }else{
       $.each(data_obj, function(i, msg){
+        console.log(msg);
         saveMessage(msg, idUsuario);
         messages.push(msg.idMensagem);
       });

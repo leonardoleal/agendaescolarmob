@@ -6,12 +6,12 @@ function deviceready(){
 }
 
 function setupDatabase(tx){
-  //tx.executeSql('drop table if exists user;');
-  //tx.executeSql('drop table if exists mensagens;');
+  tx.executeSql('drop table if exists user;');
+  tx.executeSql('drop table if exists mensagens;');
   tx.executeSql('CREATE TABLE IF NOT EXISTS user (idUsuario INTEGER, usuario TEXT, senha TEXT, token TEXT, ultimoLogin TEXT);');
   //tx.executeSql('create table if not exists mensagens (idMensagem INTEGER PRIMARY KEY, idUsuario INTEGER, assunto TEXT, mensagem TEXT, dataEnvio DATE, horaEnvio TIME);');
   //sem primary key
-  tx.executeSql('create table if not exists mensagens (idMensagem INTEGER, idUsuario INTEGER, assunto TEXT, mensagem TEXT, dataEnvio DATE, horaEnvio TIME);');
+  tx.executeSql('create table if not exists mensagens (idMensagem INTEGER, idUsuario INTEGER, assunto TEXT, mensagem TEXT, dataEnvio DATE, horaEnvio TIME, professor TEXT);');
   getCurrentToken();
 }
 
@@ -46,6 +46,7 @@ function getCurrentToken(){
             $.mobile.changePage("#pageone");
             //document.location.hash = "#pageone";
             sendToken(token, res.rows.item(0).idUsuario);
+            cleanSchedule();
             scheduleRequest(token, res.rows.item(0).idUsuario);
           }else{
             $.mobile.changePage("#pagelogin");
@@ -76,7 +77,7 @@ function getDataFromDB(idUsuario){
 
 function saveMessage(msg, idUsuario){
   db.transaction(function(tx){
-    tx.executeSql("insert into mensagens(idMensagem, assunto, mensagem, idUsuario) values(?,?,?,?)", [msg.idMensagem, msg.assunto, msg.mensagem, idUsuario]);
+    tx.executeSql("insert into mensagens(idMensagem, assunto, mensagem, idUsuario, professor) values(?,?,?,?,?)", [msg.idMensagem, msg.assunto, msg.mensagem, idUsuario, msg.professor]);
   }, errorHandler);
 }
 
@@ -100,12 +101,12 @@ function showMessage(idMensagem){
         function(tx, results){
           if (results.rows.length > 0) {
             $('#msg #cabecalho_mensagem li').remove().listview().listview('refresh');
-            $('#msg #cabecalho_mensagem').append("<li>Professora: Helena</li>").listview().listview('refresh');
-            $('#msg #cabecalho_mensagem').append("<li>Data: 01/01/2015</li>").listview().listview('refresh');
-            for (var i = 0; i < results.rows.length; i++) {
-              $('#msg #assunto').text(results.rows.item(i).assunto);
-              $('#msg p').text(results.rows.item(i).mensagem);
-            };
+            $('#msg #cabecalho_mensagem').append("<li>Professor(a): "+results.rows.item(0).professor+"</li>").listview().listview('refresh');
+            $('#msg #cabecalho_mensagem').append("<li>Data: "+formattedDate(results.rows.item(0).dataEnvio)+"</li>").listview().listview('refresh');
+            //for (var i = 0; i < results.rows.length; i++) {
+              $('#msg #assunto').text(results.rows.item(0).assunto);
+              $('#msg p').text(results.rows.item(0).mensagem);
+            //};
           }
         }, errorHandler);
     }, errorHandler);

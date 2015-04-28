@@ -1,3 +1,5 @@
+timer = null;
+
 function init(){
   document.addEventListener('deviceready', deviceready, true);
 }
@@ -23,9 +25,26 @@ $('#mensagens').on( "click", "a", function() {
   showMessage(idMensagem);
 });
 
+function formattedDate(d){
+    var data = new Date(d);
+    var dia = data.getDate();
+    if (dia.toString().length == 1)
+      dia = "0"+dia;
+    var mes = data.getMonth()+1;
+    if (mes.toString().length == 1)
+      mes = "0"+mes;
+    var ano = data.getFullYear();  
+    return dia+"/"+mes+"/"+ano;
+}
+
+function cleanSchedule(){
+  if(timer){
+    clearInterval(timer);
+  }
+}
+
 function scheduleRequest(token, idUsuario){
-  window.clearInterval(1);
-  setInterval(function(){
+  timer = setInterval(function(){
     console.log("buscando novas mensagens");
     sendToken(token, idUsuario);
   }, 50000);
