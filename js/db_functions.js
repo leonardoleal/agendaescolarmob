@@ -6,8 +6,8 @@ function deviceready(){
 }
 
 function setupDatabase(tx){
-  tx.executeSql('drop table if exists user;');
-  tx.executeSql('drop table if exists mensagens;');
+  //tx.executeSql('drop table if exists user;');
+  //tx.executeSql('drop table if exists mensagens;');
   tx.executeSql('CREATE TABLE IF NOT EXISTS user (idUsuario INTEGER, usuario TEXT, senha TEXT, token TEXT, ultimoLogin TEXT);');
   //tx.executeSql('create table if not exists mensagens (idMensagem INTEGER PRIMARY KEY, idUsuario INTEGER, assunto TEXT, mensagem TEXT, dataEnvio DATE, horaEnvio TIME);');
   //sem primary key
@@ -63,13 +63,16 @@ function getCurrentToken(){
 }
 
 function getDataFromDB(idUsuario){
+  messages = [];
   db.transaction(function(tx){
       tx.executeSql("SELECT * FROM mensagens WHERE idUsuario = ?;", [idUsuario], 
         function(tx, results){
           if (results.rows.length > 0) {
             for (var i = 0; i < results.rows.length; i++) {
-              setMsgToHtml(results.rows.item(i));
+              //setMsgToHtml(results.rows.item(i));
+              messages.push(results.rows.item(i));
             };
+            setMsgToHtml(messages);
           }
         });
     }, errorHandler);
@@ -77,7 +80,8 @@ function getDataFromDB(idUsuario){
 
 function saveMessage(msg, idUsuario){
   db.transaction(function(tx){
-    tx.executeSql("insert into mensagens(idMensagem, assunto, mensagem, idUsuario, professor) values(?,?,?,?,?)", [msg.idMensagem, msg.assunto, msg.mensagem, idUsuario, msg.professor]);
+    tx.executeSql("insert into mensagens(idMensagem, assunto, mensagem, idUsuario, professor, dataEnvio) values(?,?,?,?,?,?)", 
+      [msg.idMensagem, msg.assunto, msg.mensagem, idUsuario, msg.professor, msg.dataEnvio]);
   }, errorHandler);
 }
 

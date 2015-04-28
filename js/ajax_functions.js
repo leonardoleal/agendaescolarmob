@@ -63,9 +63,7 @@ function sendToken(token, idUsuario){
     }catch(err){
       var data_obj = data;
     }
-    if (typeof(data_obj) == "string") {
-      //alert('token invalido');
-    }else{
+    if (typeof(data_obj) != "string") {
       $.each(data_obj, function(i, msg){
         console.log(msg);
         saveMessage(msg, idUsuario);

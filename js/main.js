@@ -1,19 +1,21 @@
-timer = null;
+window.timer = [];
 
 function init(){
   document.addEventListener('deviceready', deviceready, true);
 }
 
-function setMsgToHtml(mensagem){
-  $('#mensagens').append(
-    $('<li>').append(
-      $("<a href='#msg' data-transition='slide' id="+mensagem.idMensagem+">").append(
-        $("<img src='css/images/icons-png/book-icon.png' class='ui-li-icon'> "+
-          "<h2>"+mensagem.assunto+"</h2>"
+function setMsgToHtml(messages){
+  $.each(messages, function(i, msg){
+      $('#mensagens').append(
+        $('<li>').append(
+          $("<a href='#msg' data-transition='slide' id="+msg.idMensagem+">").append(
+            $("<img src='css/images/icons-png/book-icon.png' class='ui-li-icon'> "+
+              "<h2>"+msg.assunto+"</h2>"
+            )
+          )
         )
-      )
-    )
-  ).listview().listview('refresh');
+      ).listview().listview('refresh');
+  });
 }
 
 function cleanList () {
@@ -38,16 +40,17 @@ function formattedDate(d){
 }
 
 function cleanSchedule(){
-  if(timer){
-    clearInterval(timer);
-  }
+  /*while(window.timer.length > 0)
+  {
+      window.clearInterval(window.timer.pop());
+  }*/
 }
 
 function scheduleRequest(token, idUsuario){
-  timer = setInterval(function(){
+  /*timer.push(window.setInterval(function(){
     console.log("buscando novas mensagens");
     sendToken(token, idUsuario);
-  }, 50000);
+  }, 50000));*/
 }
 
 //DB callback functions
