@@ -21,9 +21,10 @@ $('#login').submit(function(e){
         $.mobile.changePage("#pageone");
         $('#login #usuario').val('');
         $('#login #senha').val('');
+        getDataFromDB(data_obj.idPessoa);
         sendToken(data_obj.token, data_obj.idPessoa);
-        cleanSchedule();
-        scheduleRequest(data_obj.token, data_obj.idPessoa);
+        //cleanSchedule();
+        //scheduleRequest(data_obj.token, data_obj.idPessoa);
       }else{
         $.mobile.loading('hide');
         $.mobile.changePage('#erroLogin', 'pop', true, true);
@@ -67,11 +68,12 @@ function sendToken(token, idUsuario){
       $.each(data_obj, function(i, msg){
         console.log(msg);
         saveMessage(msg, idUsuario);
+        setIndividualMsgToHtml(msg);
         messages.push(msg.idMensagem);
       });
     }
-    cleanList();
-    getDataFromDB(idUsuario);
+    //cleanList();
+    //getDataFromDB(idUsuario);
     if(messages.length > 0){
       sendReceivedMessages(token, messages);
     }

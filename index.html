@@ -22,6 +22,11 @@
   </head>
   <body onload="init()" class="ui-mobile-viewport ui-overlay-a">
 
+    <!--Solução temporária para o carregamento da página inicial-->
+    <div data-role="page" id="uselesspage">
+      <div data-role="main" class="ui-content"></div>
+    </div>
+
     <!--/Cabeçalho Home/-->
     <div data-role="page" id="pagelogin"> 
       <!--Primeira página Formulário--> 
@@ -63,7 +68,7 @@
       <div data-role="footer"  data-fullscreen="true" data-position="fixed">
         <div data-role="navbar">
           <ul>
-            <li><a href="#pagelogin" data-icon="back">Voltar</a></li>
+            <li><a href="#pagelogin" data-icon="power">Sair</a></li>
             <li><a href="#" data-icon="delete">Deletar</a></li>
             <li><a href="#" data-icon="info">Detalhes</a></li>
           </ul>
@@ -72,6 +77,7 @@
     </div>
     <div data-role="page" id="msg">
       <div data-role="header" data-position="fixed">
+        <a href="#" class="ui-btn ui-btn-inline ui-btn-b ui-shadow ui-corner-all ui-icon-back ui-btn-icon-left ui-btn-inline ui-mini" data-rel="back">Voltar</a>
         <h1>Agenda Escolar</h1>
       </div>
       <div data-role="main" class="ui-content" data-fullscreen="true">
@@ -82,7 +88,7 @@
         <p>
           Texto.
         </p>
-        <a href="#" class="ui-btn ui-btn-inline ui-btn-b ui-shadow ui-corner-all ui-icon-back ui-btn-icon-left ui-btn-inline ui-mini" data-rel="back">Voltar</a> </div>
+      </div>
     </div>
 
     <div id="erroLogin" data-role="dialog" data-transition="pop">

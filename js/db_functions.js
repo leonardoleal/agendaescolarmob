@@ -39,15 +39,16 @@ function getCurrentToken(){
         if (res.rows.length > 0) {
           token = res.rows.item(0).token;
         }else{
-          //alert("nadinha");
+          //alert("nenhum usuario");
         }
         try {
           if (token) {
             $.mobile.changePage("#pageone");
             //document.location.hash = "#pageone";
+            getDataFromDB(res.rows.item(0).idUsuario);
             sendToken(token, res.rows.item(0).idUsuario);
-            cleanSchedule();
-            scheduleRequest(token, res.rows.item(0).idUsuario);
+            //cleanSchedule();
+            //scheduleRequest(token, res.rows.item(0).idUsuario);
           }else{
             $.mobile.changePage("#pagelogin");
             //document.location.hash = "#pagelogin";
@@ -59,7 +60,6 @@ function getCurrentToken(){
         }
       });
   }, errorHandler);
-  //return token;
 }
 
 function getDataFromDB(idUsuario){

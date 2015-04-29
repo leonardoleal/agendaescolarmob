@@ -6,16 +6,29 @@ function init(){
 
 function setMsgToHtml(messages){
   $.each(messages, function(i, msg){
-      $('#mensagens').append(
-        $('<li>').append(
-          $("<a href='#msg' data-transition='slide' id="+msg.idMensagem+">").append(
-            $("<img src='css/images/icons-png/book-icon.png' class='ui-li-icon'> "+
-              "<h2>"+msg.assunto+"</h2>"
-            )
+    $('#mensagens').append(
+      $('<li>').append(
+        $("<a href='#msg' data-transition='slide' id="+msg.idMensagem+">").append(
+          $("<img src='css/images/icons-png/book-icon.png' class='ui-li-icon'> "+
+            "<h2>"+msg.assunto+"</h2>"
           )
         )
-      ).listview().listview('refresh');
+      )
+    ).listview().listview('refresh');
   });
+}
+
+function setIndividualMsgToHtml(message){
+  $('#mensagens li:nth-child(1)').after(
+    $('<li>').append(
+      $("<a href='#msg' data-transition='slide' id="+message.idMensagem+">").append(
+        $("<img src='css/images/icons-png/book-icon.png' class='ui-li-icon'> "+
+          "<h2>"+message.assunto+"</h2>"
+        )
+      )
+    )
+  );
+  $('#mensagens').listview('refresh');
 }
 
 function cleanList () {
