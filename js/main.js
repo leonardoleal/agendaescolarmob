@@ -40,6 +40,11 @@ $('#mensagens').on( "click", "a", function() {
   showMessage(idMensagem);
 });
 
+$('#footer').find("a[data-icon='power']").click(function(){
+  var id = $(this).attr('id');
+  updateUser(null, null, id);
+});
+
 function formattedDate(d){
     var data = new Date(d);
     var dia = data.getDate();

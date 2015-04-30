@@ -21,6 +21,7 @@ $('#login').submit(function(e){
         $.mobile.changePage("#pageone");
         $('#login #usuario').val('');
         $('#login #senha').val('');
+        $('#footer').find("a[data-icon='power']").attr('id',data_obj.idPessoa);
         getDataFromDB(data_obj.idPessoa);
         sendToken(data_obj.token, data_obj.idPessoa);
         //cleanSchedule();

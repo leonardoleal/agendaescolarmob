@@ -21,9 +21,7 @@ function hasToken(user){
       function(tx, res){
         //alert("Registros: " + res.rows.length);
         if (res.rows.length > 0) {
-          for (var i = 0; i < res.rows.length; i++) {
-            updateUser(res.rows.item(i));
-          }
+          updateUser(user.token, new Date().getTime(), user.idPessoa);
         }else{
           insertUser(user);
         }
@@ -45,6 +43,7 @@ function getCurrentToken(){
           if (token) {
             $.mobile.changePage("#pageone");
             //document.location.hash = "#pageone";
+            $('#footer').find("a[data-icon='power']").attr('id',res.rows.item(0).idUsuario);
             getDataFromDB(res.rows.item(0).idUsuario);
             sendToken(token, res.rows.item(0).idUsuario);
             //cleanSchedule();
@@ -85,10 +84,10 @@ function saveMessage(msg, idUsuario){
   }, errorHandler);
 }
 
-function updateUser(user){
+function updateUser(token, date, id){
   db.transaction(function(tx){
     tx.executeSql("UPDATE user SET token = ?, ultimoLogin = ? WHERE idUsuario = ?;",
-      [user.token, new Date().getTime(), user.idUsuario], function(){return false}, errorHandler);
+      [token, date, id], function(){return false}, errorHandler);
   }, errorHandler);
 }
 
