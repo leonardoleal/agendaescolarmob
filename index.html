@@ -18,6 +18,9 @@
           margin-right: 0px;
           margin-left: 0px;
       }
+      p {
+        text-align: left;
+      }
     </style>
   </head>
   <body onload="init()" class="ui-mobile-viewport ui-overlay-a">
@@ -28,8 +31,8 @@
     </div>
 
     <!--/Cabeçalho Home/-->
-    <div data-role="page" id="pagelogin"> 
-      <!--Primeira página Formulário--> 
+    <div data-role="page" id="pagelogin">
+      <!--Primeira página Formulário-->
       <!--Primeira Cabeçalho-->
       <div data-role="header" data-position="fixed">
         <h2>Agenda Escolar</h2>
@@ -37,20 +40,18 @@
       <!--Primeira página com conteúdo-->
       <div data-role="main" class="ui-content">
         <form id="login" method="POST">
-          <label for="user">Usuário: <span>*</span></label>
           <input type="text" name="usuario" id="usuario" placeholder="Usuário" required />
-          <label for="password">Senha: <span>*</span></label>
           <input type="password" id="senha" name="senha" placeholder="Senha" required />
-          <input type="submit" id="botao" data-inline="true" value="Enviar" data-theme="b" />
+          <input type="submit" id="botao" value="Enviar" data-theme="b" />
         </form>
       </div>
       <!--Primeiro Rodapé-->
     </div>
-    <!-- Fim da primeira página --> 
+    <!-- Fim da primeira página -->
 
     <!--Segunda Página-->
-    <div data-role="page" id="pageone"> 
-      <!--/Lista de Mensagens/--> 
+    <div data-role="page" id="pageone">
+      <!--/Lista de Mensagens/-->
       <!--Segundo Cabeçalho-->
       <div data-role="header" data-position="fixed">
         <h1>Agenda Escolar</h1>
@@ -77,17 +78,21 @@
     </div>
     <div data-role="page" id="msg">
       <div data-role="header" data-position="fixed">
-        <a href="#" class="ui-btn ui-btn-inline ui-btn-b ui-shadow ui-corner-all ui-icon-back ui-btn-icon-left ui-btn-inline ui-mini" data-rel="back">Voltar</a>
         <h1>Agenda Escolar</h1>
       </div>
       <div data-role="main" class="ui-content" data-fullscreen="true">
-      <!-- Texto Mensagem --> 
+      <!-- Texto Mensagem -->
         <h3 id="assunto">Assunto</h3>
         <ul data-role="listview" data-inset="true" data-add-back-btn="true" id="cabecalho_mensagem">
         </ul>
         <p>
           Texto.
         </p>
+        <form method="post" id="resposta">
+          <label for="resposta">Digite sua resposta: </label>
+          <textarea name="resposta"></textarea>
+          <input type="submit" data-inline="true" value="Enviar" data-theme="b" />
+        </form>
       </div>
     </div>
 
