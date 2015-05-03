@@ -17,7 +17,7 @@ function setupDatabase(tx){
 
 function hasToken(user){
   db.transaction(function(tx){
-    tx.executeSql("SELECT * FROM user WHERE idUsuario = ?;", [user.idPessoa], 
+    tx.executeSql("SELECT * FROM user WHERE idUsuario = ?;", [user.idPessoa],
       function(tx, res){
         //alert("Registros: " + res.rows.length);
         if (res.rows.length > 0) {
@@ -32,7 +32,7 @@ function hasToken(user){
 function getCurrentToken(){
   var token;
   db.transaction(function(tx){
-    tx.executeSql("SELECT * FROM user ORDER BY ultimoLogin DESC", [], 
+    tx.executeSql("SELECT * FROM user ORDER BY ultimoLogin DESC", [],
       function(tx, res){
         if (res.rows.length > 0) {
           token = res.rows.item(0).token;
@@ -41,16 +41,15 @@ function getCurrentToken(){
         }
         try {
           if (token) {
+            window.token = token;
             $.mobile.changePage("#pageone");
-            //document.location.hash = "#pageone";
             $('#footer').find("a[data-icon='power']").attr('id',res.rows.item(0).idUsuario);
             getDataFromDB(res.rows.item(0).idUsuario);
             sendToken(token, res.rows.item(0).idUsuario);
-            //cleanSchedule();
-            //scheduleRequest(token, res.rows.item(0).idUsuario);
+            cleanSchedule();
+            scheduleRequest(token, res.rows.item(0).idUsuario);
           }else{
             $.mobile.changePage("#pagelogin");
-            //document.location.hash = "#pagelogin";
           }
         } catch (exception) {
 
@@ -64,7 +63,7 @@ function getCurrentToken(){
 function getDataFromDB(idUsuario){
   messages = [];
   db.transaction(function(tx){
-      tx.executeSql("SELECT * FROM mensagens WHERE idUsuario = ?;", [idUsuario], 
+      tx.executeSql("SELECT * FROM mensagens WHERE idUsuario = ?;", [idUsuario],
         function(tx, results){
           if (results.rows.length > 0) {
             for (var i = 0; i < results.rows.length; i++) {
@@ -79,7 +78,7 @@ function getDataFromDB(idUsuario){
 
 function saveMessage(msg, idUsuario){
   db.transaction(function(tx){
-    tx.executeSql("insert into mensagens(idMensagem, assunto, mensagem, idUsuario, professor, dataEnvio) values(?,?,?,?,?,?)", 
+    tx.executeSql("insert into mensagens(idMensagem, assunto, mensagem, idUsuario, professor, dataEnvio) values(?,?,?,?,?,?)",
       [msg.idMensagem, msg.assunto, msg.mensagem, idUsuario, msg.professor, msg.dataEnvio]);
   }, errorHandler);
 }
@@ -100,17 +99,18 @@ function insertUser(user){
 
 function showMessage(idMensagem){
   db.transaction(function(tx){
-      tx.executeSql("SELECT * FROM mensagens WHERE idMensagem = ?;", [idMensagem], 
-        function(tx, results){
-          if (results.rows.length > 0) {
-            $('#msg #cabecalho_mensagem li').remove().listview().listview('refresh');
-            $('#msg #cabecalho_mensagem').append("<li>Professor(a): "+results.rows.item(0).professor+"</li>").listview().listview('refresh');
-            $('#msg #cabecalho_mensagem').append("<li>Data: "+formattedDate(results.rows.item(0).dataEnvio)+"</li>").listview().listview('refresh');
-            //for (var i = 0; i < results.rows.length; i++) {
-              $('#msg #assunto').text(results.rows.item(0).assunto);
-              $('#msg p').text(results.rows.item(0).mensagem);
-            //};
-          }
-        }, errorHandler);
+    tx.executeSql("SELECT * FROM mensagens WHERE idMensagem = ?;", [idMensagem],
+      function(tx, results){
+        if (results.rows.length > 0) {
+          $('#msg #cabecalho_mensagem li').remove().listview().listview('refresh');
+          $('#msg #cabecalho_mensagem').append("<li>Professor(a): "+results.rows.item(0).professor+"</li>").listview().listview('refresh');
+          $('#msg #cabecalho_mensagem').append("<li>Data: "+formattedDate(results.rows.item(0).dataEnvio)+"</li>").listview().listview('refresh');
+          $('#msg #assunto').text(results.rows.item(0).assunto);
+          $('#msg #assunto').attr('idmensagem', idMensagem);
+          $('#msg #assunto').attr('token', window.token);
+          $('#msg #assunto').attr('idpessoa', results.rows.item(0).idUsuario);
+          $('#msg p').text(results.rows.item(0).mensagem);
+        }
+      }, errorHandler);
     }, errorHandler);
 }

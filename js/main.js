@@ -1,5 +1,3 @@
-window.timer = [];
-
 function init(){
   document.addEventListener('deviceready', deviceready, true);
 }
@@ -43,6 +41,23 @@ $('#mensagens').on( "click", "a", function() {
 $('#footer').find("a[data-icon='power']").click(function(){
   var id = $(this).attr('id');
   updateUser(null, null, id);
+  window.token = null;
+  cleanSchedule();
+});
+
+$('#login').submit(function(e){
+  e.preventDefault();
+  cleanList();
+  login($(this).serialize());
+});
+
+$('#form_resposta').submit(function(e){
+  e.preventDefault();
+  var token = $("#assunto").attr('token');
+  var idMensagem = $("#assunto").attr('idmensagem');
+  var idPessoa = $("#assunto").attr('idPessoa');
+  var reply = $('#resposta').val();
+  sendReply(token, idMensagem, idPessoa, reply);
 });
 
 function formattedDate(d){
@@ -53,22 +68,23 @@ function formattedDate(d){
     var mes = data.getMonth()+1;
     if (mes.toString().length == 1)
       mes = "0"+mes;
-    var ano = data.getFullYear();  
+    var ano = data.getFullYear();
     return dia+"/"+mes+"/"+ano;
 }
 
 function cleanSchedule(){
-  /*while(window.timer.length > 0)
+  if(window.intervalId)
   {
-      window.clearInterval(window.timer.pop());
-  }*/
+    clearInterval(window.intervalId);
+    window.intervalId = null;
+  }
 }
 
 function scheduleRequest(token, idUsuario){
-  /*timer.push(window.setInterval(function(){
+  window.intervalId = setInterval(function(){
     console.log("buscando novas mensagens");
     sendToken(token, idUsuario);
-  }, 50000));*/
+  }, 300000);
 }
 
 //DB callback functions

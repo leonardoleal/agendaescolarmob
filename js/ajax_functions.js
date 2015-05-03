@@ -1,13 +1,11 @@
-$('#login').submit(function(e){
-  e.preventDefault();
-  cleanList();
+function login(loginData){
   $.mobile.loading('show');
   $.ajax({
     url: "http://agendaescolar.lealweb.com.br/servicoSessao/validarUsuario",
     type: 'POST',
     dataType: 'text',
     contentType: 'application/x-www-form-urlencoded',
-    data: $(this).serialize(),
+    data: loginData,
     success: function(data){
       console.log(data);
       try{
@@ -24,8 +22,9 @@ $('#login').submit(function(e){
         $('#footer').find("a[data-icon='power']").attr('id',data_obj.idPessoa);
         getDataFromDB(data_obj.idPessoa);
         sendToken(data_obj.token, data_obj.idPessoa);
-        //cleanSchedule();
-        //scheduleRequest(data_obj.token, data_obj.idPessoa);
+        window.token = data_obj.token;
+        cleanSchedule();
+        scheduleRequest(data_obj.token, data_obj.idPessoa);
       }else{
         $.mobile.loading('hide');
         $.mobile.changePage('#erroLogin', 'pop', true, true);
@@ -36,7 +35,7 @@ $('#login').submit(function(e){
       console.log(error.message);
     }
   });
-});
+}
 
 function sendReceivedMessages(token, messages){
   $.ajax({
@@ -77,6 +76,22 @@ function sendToken(token, idUsuario){
     //getDataFromDB(idUsuario);
     if(messages.length > 0){
       sendReceivedMessages(token, messages);
+    }
+  });
+}
+
+function sendReply(token, idMensagem, idPessoa, reply){
+  $.ajax({
+    url: "http://agendaescolar.lealweb.com.br/servicoMensagem/respostaResponsavel/" + token,
+    type: 'POST',
+    dataType: 'text',
+    contentType: 'application/x-www-form-urlencoded',
+    data: { idMensagem: idMensagem, idPessoa: idPessoa, mensagem: reply },
+    success: function(data){
+      console.log(data);
+    },
+    error: function(xhr, status, error){
+      console.log(error.message);
     }
   });
 }
