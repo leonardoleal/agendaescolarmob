@@ -72,8 +72,6 @@ function sendToken(token, idUsuario){
         messages.push(msg.idMensagem);
       });
     }
-    //cleanList();
-    //getDataFromDB(idUsuario);
     if(messages.length > 0){
       sendReceivedMessages(token, messages);
     }
