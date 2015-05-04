@@ -29,13 +29,28 @@ function setIndividualMsgToHtml(message){
   $('#mensagens').listview('refresh');
 }
 
+function setReplyToHtml(replies){
+  $.each(replies, function(i, reply){
+    $('#respostas_enviadas').append(
+      $('<li>').append("<p><i><b>Enviada em "+formattedDate(reply.dataEnvio)+": </b></i>"+reply.resposta+"</p>")
+    );
+  });
+  $('#resposta').val('');
+}
+
 function cleanList () {
   $('#mensagens .ui-li-has-icon').remove().listview().listview('refresh');
 }
 
+function cleanRepliesList(){
+  $('#respostas_enviadas li').remove().listview().listview('refresh');
+}
+
 $('#mensagens').on( "click", "a", function() {
   var idMensagem = $(this).attr('id');
+  cleanRepliesList();
   showMessage(idMensagem);
+  getRepliesFromDB(idMensagem);
 });
 
 $('#footer').find("a[data-icon='power']").click(function(){

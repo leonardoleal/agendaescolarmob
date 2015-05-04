@@ -8,10 +8,12 @@ function deviceready(){
 function setupDatabase(tx){
   //tx.executeSql('drop table if exists user;');
   //tx.executeSql('drop table if exists mensagens;');
+  //tx.executeSql('drop table if exists respostas;');
   tx.executeSql('CREATE TABLE IF NOT EXISTS user (idUsuario INTEGER, usuario TEXT, senha TEXT, token TEXT, ultimoLogin TEXT);');
   //tx.executeSql('create table if not exists mensagens (idMensagem INTEGER PRIMARY KEY, idUsuario INTEGER, assunto TEXT, mensagem TEXT, dataEnvio DATE, horaEnvio TIME);');
   //sem primary key
   tx.executeSql('create table if not exists mensagens (idMensagem INTEGER, idUsuario INTEGER, assunto TEXT, mensagem TEXT, dataEnvio DATE, horaEnvio TIME, professor TEXT);');
+  tx.executeSql('create table if not exists respostas (idMensagem INTEGER, idUsuario INTEGER, resposta TEXT, dataEnvio DATE, horaEnvio TIME);');
   getCurrentToken();
 }
 
@@ -67,10 +69,24 @@ function getDataFromDB(idUsuario){
         function(tx, results){
           if (results.rows.length > 0) {
             for (var i = 0; i < results.rows.length; i++) {
-              //setMsgToHtml(results.rows.item(i));
               messages.push(results.rows.item(i));
             };
             setMsgToHtml(messages);
+          }
+        });
+    }, errorHandler);
+}
+
+function getRepliesFromDB(idMensagem){
+  replies = [];
+  db.transaction(function(tx){
+      tx.executeSql("SELECT * FROM respostas WHERE idMensagem = ?;", [idMensagem],
+        function(tx, results){
+          if (results.rows.length > 0) {
+            for (var i = 0; i < results.rows.length; i++) {
+              replies.push(results.rows.item(i));
+            };
+            setReplyToHtml(replies);
           }
         });
     }, errorHandler);
@@ -94,6 +110,13 @@ function insertUser(user){
   db.transaction(function(tx){
     tx.executeSql("INSERT INTO user (idUsuario, usuario, senha, token, ultimoLogin) VALUES (?,?,?,?,?);",
       [user.idPessoa, user.usuario, user.senha, user.token, new Date().getTime()], nullHandler, errorHandler);
+  });
+}
+
+function insertReply(reply){
+  db.transaction(function(tx){
+    tx.executeSql("INSERT INTO respostas (idMensagem, idUsuario, resposta, dataEnvio) VALUES (?,?,?,?);",
+      [reply.idMensagem, reply.idUsuario, reply.resposta, new Date().getTime()], nullHandler, errorHandler);
   });
 }
 

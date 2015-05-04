@@ -90,9 +90,11 @@
         </p>
         <form method="post" id="form_resposta">
           <label for="resposta">Digite sua resposta: </label>
-          <textarea name="resposta" id="resposta"></textarea>
-          <input type="submit" data-inline="true" value="Enviar" data-theme="b" />
+          <textarea name="resposta" id="resposta" required></textarea>
+          <input type="submit" data-inline="true" value="Responder" data-theme="b" />
         </form>
+        <h4>Respostas enviadas:</h4>
+        <ul id="respostas_enviadas"></ul>
       </div>
     </div>
 

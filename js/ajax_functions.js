@@ -87,6 +87,11 @@ function sendReply(token, idMensagem, idPessoa, reply){
     data: { idMensagem: idMensagem, idPessoa: idPessoa, mensagem: reply },
     success: function(data){
       console.log(data);
+      if (typeof(data) == "string") {
+        reply = { resposta: reply, idMensagem: idMensagem, idUsuario: idPessoa, dataEnvio: new Date().getTime() }
+        setReplyToHtml([reply]);
+        insertReply(reply);
+      };
     },
     error: function(xhr, status, error){
       console.log(error.message);
