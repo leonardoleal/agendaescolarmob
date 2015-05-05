@@ -64,6 +64,21 @@ var HomePage = React.createClass({
   }
 });
 
+var LoginPage = React.createClass({
+  render: function(){
+    return (
+      <div>
+        <Header text="Agenda Escolar" back="false" />
+        <form>
+          <input type="text" name="usuario" placeholder="Usuário" />
+          <input type="password" name="senha"  placeholder="Senha" />
+          <button className="btn btn-positive btn-block">Login</button>
+        </form>
+      </div>
+    );
+  }
+});
+
 var MessagePage = React.createClass({
   getInitialState: function() {
       return {message: {}};
@@ -117,4 +132,10 @@ var App = React.createClass({
   }
 });
 
-React.render(<App />, document.body);
+$(function() {
+  document.addEventListener("deviceready", onDeviceReady, true);
+});
+
+function onDeviceReady(){
+  React.render(<App />, document.body);
+}
