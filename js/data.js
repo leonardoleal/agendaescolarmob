@@ -1,27 +1,27 @@
 messageService = (function(){
 
   var findById = function(id){
-        var deffered = $.Deferred();
-        var message = null;
-        var l = messages.length;
-        for (var i = 0; i < 1; i++) {
-          if(messages[i].id == id){
-            message = messages[i];
-            break;
-          }
-        }
-        deffered.resolve(message);
-        return deffered.promise();
-      },
+    var deferred = $.Deferred();
+    var message = null;
+    var l = messages.length;
+    $.each(messages, function(i, msg){
+      if(msg.id == id){
+        message = msg;
+        return false;//break the each loop
+      }
+    });
+    deferred.resolve(message);
+    return deferred.promise();
+  },
 
-      findByName = function(searchKey) {
-        var deferred = $.Deferred();
-        var results = messages.filter(function(element){
-          return element.assunto.toLowerCase().indexOf(searchKey.toLowerCase()) > -1;
-        });
-        deferred.resolve(results);
-        return deferred.promise();
-      },
+  findByName = function(searchKey) {
+    var deferred = $.Deferred();
+    var results = messages.filter(function(element){
+      return element.assunto.toLowerCase().indexOf(searchKey.toLowerCase()) > -1;
+    });
+    deferred.resolve(results);
+    return deferred.promise();
+  },
 
   messages = [
     {"id": 1, "assunto": "Mensagem 1", "message": "King"},

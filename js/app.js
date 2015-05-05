@@ -16,11 +16,11 @@ var SearchBar = React.createClass({
   render: function () {
     return (
       <div className="bar bar-standard bar-header-secondary">
-        <input type="search" ref="searchKey" onChange={this.searchHandler}/>
+        <input type="search" ref="searchKey" onChange={this.searchHandler} value={this.props.searchKey}/>
       </div>
     );
   }
-});;
+});
 
 var MessageListItem = React.createClass({
   render: function(){
@@ -45,87 +45,44 @@ var MessageList = React.createClass({
     return (
       <ul  className="table-view">
        {items}
-     </ul>
+      </ul>
     );
   }
 });
 
 var HomePage = React.createClass({
-  getInitialState: function(){
-    return {messages: []}
-  },
-  searchHandler: function(key){
-    this.props.service.findByName(key).done(function(result){
-      this.setState({searchKey: key, messages: result});
-    }.bind(this));
-  },
   render: function(){
     return (
       <div>
-        <Header text="Agenda Escolar" />
-        <SearchBar searchHandler={this.searchHandler} />
-        <MessageList messages={this.state.messages}/>
+        <Header text="Agenda Escolar" back="false"/>
+        <SearchBar searchKey={this.props.searchKey} searchHandler={this.props.searchHandler}/>
+        <div className="content">
+          <MessageList messages={this.props.messages}/>
+        </div>
       </div>
     );
   }
 });
 
 var MessagePage = React.createClass({
-    getInitialState: function() {
-        return {message: {}};
-    },
-    componentDidMount: function() {
-        this.props.service.findById(this.props.messageId).done(function(result) {
-            this.setState({message: result});
-        }.bind(this));
-    },
-    render: function () {
-      return (
-        <div>
-          <Header text="Mensagem" back="true"/>
-          <div className="card">
-            <ul className="table-view">
-              <li className="table-view-cell media">
-                //<img className="media-object big pull-left" src={"pics/" + this.state.employee.firstName + "_" + this.state.employee.lastName + ".jpg" }/>
-                <h1>{this.state.message.assunto}</h1>
-                <p>{this.state.message.message}</p>
-              </li>
-              /*<li className="table-view-cell media">
-                <a href={"tel:" + this.state.employee.officePhone} className="push-right">
-                  <span className="media-object pull-left icon icon-call"></span>
-                  <div className="media-body">
-                  Call Office
-                      <p>{this.state.employee.officePhone}</p>
-                  </div>
-                </a>
-              </li>
-              <li className="table-view-cell media">
-                <a href={"tel:" + this.state.employee.mobilePhone} className="push-right">
-                  <span className="media-object pull-left icon icon-call"></span>
-                  <div className="media-body">
-                  Call Mobile
-                    <p>{this.state.employee.mobilePhone}</p>
-                  </div>
-                </a>
-              </li>
-              <li className="table-view-cell media">
-                <a href={"sms:" + this.state.employee.mobilePhone} className="push-right">
-                  <span className="media-object pull-left icon icon-sms"></span>
-                  <div className="media-body">
-                  SMS
-                      <p>{this.state.employee.mobilePhone}</p>
-                  </div>
-                </a>
-              </li>
-              <li className="table-view-cell media">
-                <a href={"mailto:" + this.state.employee.email} className="push-right">
-                  <span className="media-object pull-left icon icon-email"></span>
-                  <div className="media-body">
-                  Email
-                      <p>{this.state.employee.email}</p>
-                  </div>
-                </a>
-              </li>*/
+  getInitialState: function() {
+      return {message: {}};
+  },
+  componentDidMount: function() {
+      this.props.service.findById(this.props.messageId).done(function(result) {
+        this.setState({message: result});
+      }.bind(this));
+  },
+  render: function () {
+    return (
+      <div>
+        <Header text="Mensagem" back="true"/>
+        <div className="card">
+          <ul className="table-view">
+            <li className="table-view-cell media">
+              <h1>{this.state.message.assunto}</h1>
+              <p>{this.state.message.message}</p>
+            </li>
           </ul>
         </div>
       </div>
@@ -133,18 +90,31 @@ var MessagePage = React.createClass({
   }
 });
 
-
-router.addRoute('', function() {
-    React.render(
-        <HomePage service={messageService}/>,
-        document.body
-    );
+var App = React.createClass({
+  getInitialState: function(){
+    return {
+      searchKey: '',
+      messages: [],
+      page: null
+    }
+  },
+  searchHandler: function(searchKey){
+    messageService.findByName(searchKey).done(function(messages){
+      this.setState({searchKey:searchKey, messages: messages, page: <HomePage searchKey={searchKey} searchHandler={this.searchHandler} messages={messages} />});
+    }.bind(this));
+  },
+  componentDidMount: function(){
+    router.addRoute('', function() {
+      this.setState({page: <HomePage searchKey={this.state.searchKey} searchHandler={this.searchHandler} messages={this.state.messages} />});
+    }.bind(this));
+    router.addRoute('messages/:id', function(id) {
+      this.setState({page: <MessagePage messageId={id} service={messageService}/>});
+    }.bind(this));
+    router.start();
+  },
+  render: function(){
+    return this.state.page;
+  }
 });
 
-router.addRoute('messages/:id', function(id) {
-    React.render(
-        <MessagePage messageId={id} service={messageService}/>,
-        document.body
-    );
-});
-router.start();
+React.render(<App />, document.body);
