@@ -65,15 +65,46 @@ var HomePage = React.createClass({
 });
 
 var LoginPage = React.createClass({
+  handleUsernameChange: function(e){
+    this.setState({usuario: e.target.value});
+  },
+  handlePasswordChange: function(e){
+    this.setState({senha: e.target.value});
+  },
+  handleSubmit: function(e){
+    e.preventDefault();
+    $.ajax({
+      url: "http://agendaescolar.lealweb.com.br/servicoSessao/validarUsuario",
+      type: 'POST',
+      dataType: 'text',
+      contentType: 'application/x-www-form-urlencoded',
+      data: {usuario: this.state.usuario, senha: this.state.senha},
+      success: function(data){
+        console.log(data);
+        try{
+          var data_obj = JSON.parse(data);
+          router.load('messages/');
+        }catch(err){
+          var data_obj = data;
+        }      
+      },
+      error: function(xhr, status, error){
+        $.mobile.loading('hide');
+        console.log(error.message);
+      }
+    });
+  },
   render: function(){
     return (
       <div>
         <Header text="Agenda Escolar" back="false" />
-        <form>
-          <input type="text" name="usuario" placeholder="Usuário" />
-          <input type="password" name="senha"  placeholder="Senha" />
-          <button className="btn btn-positive btn-block">Login</button>
-        </form>
+        <div className="content">
+          <form method="POST" onSubmit={this.handleSubmit}>
+            <input type="text" name="usuario" placeholder="Usuário" onChange={this.handleUsernameChange}/>
+            <input type="password" name="senha"  placeholder="Senha" onChange={this.handlePasswordChange} />
+            <button className="btn btn-positive btn-block">Login</button>
+          </form>
+        </div>
       </div>
     );
   }
@@ -120,6 +151,9 @@ var App = React.createClass({
   },
   componentDidMount: function(){
     router.addRoute('', function() {
+      this.setState({page: <LoginPage />});
+    }.bind(this));
+    router.addRoute('messages/', function() {
       this.setState({page: <HomePage searchKey={this.state.searchKey} searchHandler={this.searchHandler} messages={this.state.messages} />});
     }.bind(this));
     router.addRoute('messages/:id', function(id) {
