@@ -23,6 +23,10 @@ messageService = (function(){
     return deferred.promise();
   },
 
+  findByPerson = function(idPessoa){
+
+  },
+
   messages = [
     {"id": 1, "assunto": "Mensagem 1", "message": "King"},
     {"id": 2, "assunto": "Mensagem 2", "message": "Taylor"},
@@ -44,4 +48,26 @@ messageService = (function(){
     findByName: findByName
   };
 
+}());
+
+userService = (function(){
+
+  var getLoggedUser = function(){
+    var user = null;
+    db.transaction(function(tx){
+      tx.executeSql("SELECT * FROM user ORDER BY ultimoLogin DESC", [],
+        function(tx, res){
+          if (res.rows.length > 0) {
+            token = res.rows.item(0);
+          }
+        });
+    }, errorHandler);
+    return user;
+  }
+
+  // public API
+  return {
+    getLoggedUser: getLoggedUser
+  };
+  
 }());

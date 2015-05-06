@@ -86,6 +86,9 @@ var LoginPage = React.createClass({
           router.load('messages/');
         }catch(err){
           var data_obj = data;
+          return (
+            <LoginErrorModal />
+          );
         }      
       },
       error: function(xhr, status, error){
@@ -100,10 +103,26 @@ var LoginPage = React.createClass({
         <Header text="Agenda Escolar" back="false" />
         <div className="content">
           <form method="POST" onSubmit={this.handleSubmit}>
-            <input type="text" name="usuario" placeholder="Usuário" onChange={this.handleUsernameChange}/>
-            <input type="password" name="senha"  placeholder="Senha" onChange={this.handlePasswordChange} />
+            <input type="text" name="usuario" placeholder="Usuário" required onChange={this.handleUsernameChange}/>
+            <input type="password" name="senha"  placeholder="Senha" required onChange={this.handlePasswordChange} />
             <button className="btn btn-positive btn-block">Login</button>
           </form>
+        </div>
+      </div>
+    );
+  }
+});
+
+LoginErrorModal = React.createClass({
+  render: function(){
+    return (
+      <div id="login_error_modal" className="modal active">
+        <header className="content">
+          <a className="icon icon-close pull-right" href="#login_error_modal"></a>
+          <h1 className="title">Login inválido</h1>
+        </header>
+        <div className="content">
+          <p className="content-padded">Verifique o usuário e senha digitados.</p>
         </div>
       </div>
     );
@@ -159,17 +178,57 @@ var App = React.createClass({
     router.addRoute('messages/:id', function(id) {
       this.setState({page: <MessagePage messageId={id} service={messageService}/>});
     }.bind(this));
+    router.addRoute('loginerror/', function(){
+      this.setState({page: <LoginErrorModal />});
+    }.bind(this));
     router.start();
   },
   render: function(){
     return this.state.page;
+    //return router.load(this.props.route);
   }
 });
 
 $(function() {
-  document.addEventListener("deviceready", onDeviceReady, true);
+  //document.addEventListener("deviceready", onDeviceReady, true);
 });
 
+var db;
+
 function onDeviceReady(){
-  React.render(<App />, document.body);
+  db = window.openDatabase("agenda", "1.0", "agenda", 1000000);
+  db.transaction(setupDatabase, errorHandler);
+  
 }
+React.render(<App />, document.body);
+
+function setupDatabase(tx){
+  tx.executeSql('drop table if exists user;');
+  tx.executeSql('drop table if exists mensagens;');
+  tx.executeSql('drop table if exists respostas;');
+  tx.executeSql('CREATE TABLE IF NOT EXISTS user (idUsuario INTEGER, usuario TEXT, senha TEXT, token TEXT, ultimoLogin TEXT);');
+  //tx.executeSql('create table if not exists mensagens (idMensagem INTEGER PRIMARY KEY, idUsuario INTEGER, assunto TEXT, mensagem TEXT, dataEnvio DATE, horaEnvio TIME);');
+  //sem primary key
+  tx.executeSql('create table if not exists mensagens (idMensagem INTEGER, idUsuario INTEGER, assunto TEXT, mensagem TEXT, dataEnvio DATE, horaEnvio TIME, professor TEXT);');
+  tx.executeSql('create table if not exists respostas (idMensagem INTEGER, idUsuario INTEGER, resposta TEXT, dataEnvio DATE, horaEnvio TIME);');
+  user = userService.getLoggedUser();
+  loadStartPage(user);
+}
+
+function loadStartPage(user){
+  var route;
+  if (user) {
+    route = 'messages/';
+  }else{
+    route = '';
+  }
+
+  
+}
+
+//DB callback functions
+function errorHandler(e){
+  alert(e.message);
+}
+
+function nullHandler(){};
