@@ -7,12 +7,16 @@
     <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" type="text/css" href="css/jquery.mobile-1.4.5.min.css" />
-    <link rel="stylesheet" href="css/teste/jquery-mobile.css" />
+    <link rel="stylesheet" href="css/jquery-mobile.css" />
+    <link rel="stylesheet" href="css/fullcalendar.min.css" />
     <link rel="stylesheet" type="text/css" media="screen and (max-device-width: 799px)"  href="css/jquery-mobile.css" />
     <title>Agenda Escolar</title>
     <script type="text/javascript" src="cordova.js"></script>
     <script src="js/jquery-2.1.3.min.js"></script>
     <script src="js/jquery.mobile-1.4.5.min.js"></script>
+    <script src="js/moment.min.js"></script>
+    <script src="js/fullcalendar.min.js"></script>
+    <script src='js/pt-br.js'></script>
     <style>
       .ui-header .ui-title {
           margin-right: 0px;
@@ -21,7 +25,22 @@
       p {
         text-align: left;
       }
+      .fc-day-grid-container {
+        height: auto !important;
+      }
+      .fc-icon {
+        color: black !important;
+      }
     </style>
+    <script type="text/javascript">
+      $(document).on('pageshow','#calendario',function(e,data){ 
+        // page is now ready, initialize the calendar...
+        var calendar = $('#calendar').fullCalendar({
+          // put your options and callbacks here
+          defaultView: 'month'
+        })
+      });
+    </script>
   </head>
   <body onload="init()" class="ui-mobile-viewport ui-overlay-a">
 
@@ -55,6 +74,7 @@
       <!--Segundo Cabeçalho-->
       <div data-role="header" data-position="fixed" data-tap-toggle="false">
         <h1>Agenda Escolar</h1>
+        <a href="#calendario" class="ui-btn-right ui-btn ui-btn-b ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-grid" style="line-height: 260%;">Calendário</a>
       </div>
       <div data-role="main" class="ui-content">
         <!--/Campo procura/-->
@@ -95,6 +115,16 @@
         </form>
         <h4>Respostas enviadas:</h4>
         <ul id="respostas_enviadas"></ul>
+      </div>
+    </div>
+
+    <!-- Tela de calendário -->
+    <div data-role="page" id="calendario">
+      <div data-role="header" data-position="fixed" data-tap-toggle="false">
+        <h1>Agenda Escolar</h1>
+      </div>
+      <div data-role="main" class="ui-content" data-fullscreen="true">
+        <div id='calendar'></div>
       </div>
     </div>
 
