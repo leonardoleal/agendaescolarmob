@@ -59,12 +59,8 @@ function sendToken(token, idUsuario){
     url: "http://agendaescolar.lealweb.com.br/servicoMensagem/consultaPorResponsavel/"+token,
     dataType: 'html'
   }).done(function(data){
-    try{
-      var data_obj = JSON.parse(data);
-    }catch(err){
-      var data_obj = data;
-    }
-    if (typeof(data_obj) != "string") {
+    data_obj = JSON.parse(data);
+    if (data_obj.hasOwnProperty('0')) {
       $.each(data_obj, function(i, msg){
         console.log(msg);
         saveMessage(msg, idUsuario);

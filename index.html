@@ -34,11 +34,25 @@
     </style>
     <script type="text/javascript">
       $(document).on('pageshow','#calendario',function(e,data){ 
+
+        var date = new Date();
+        var d = date.getDate();
+        var m = date.getMonth();
+        var y = date.getFullYear();
+
         // page is now ready, initialize the calendar...
         var calendar = $('#calendar').fullCalendar({
           // put your options and callbacks here
-          defaultView: 'month'
+          defaultView: 'month',
+          eventRender: function(event, element) {                                          
+            //element.find('a.fc-day-grid-event').setAttribute("id",element.id);
+            element[0].setAttribute("id", event.id);
+            element[0].setAttribute("href", "#msg");
+            element[0].setAttribute("data-transition", "slide");
+          },
         })
+
+        getDataFromDBForCalendar(idUsuario);
       });
     </script>
   </head>
@@ -74,7 +88,7 @@
       <!--Segundo Cabeçalho-->
       <div data-role="header" data-position="fixed" data-tap-toggle="false">
         <h1>Agenda Escolar</h1>
-        <a href="#calendario" class="ui-btn-right ui-btn ui-btn-b ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-grid" style="line-height: 260%;">Calendário</a>
+        <a href="#calendario" data-role="button" data-icon="grid" data-iconpos="notext" class="ui-btn-right"></a>
       </div>
       <div data-role="main" class="ui-content">
         <!--/Campo procura/-->
@@ -122,6 +136,7 @@
     <div data-role="page" id="calendario">
       <div data-role="header" data-position="fixed" data-tap-toggle="false">
         <h1>Agenda Escolar</h1>
+        <a href="#pageone" data-role="button" data-icon="bars" data-iconpos="notext" class="ui-btn-right"></a>
       </div>
       <div data-role="main" class="ui-content" data-fullscreen="true">
         <div id='calendar'></div>

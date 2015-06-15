@@ -13,6 +13,7 @@ function setMsgToHtml(messages){
         )
       )
     ).listview().listview('refresh');
+    addCalendarEvent(msg.idMensagem, new Date(msg.dataEnvio), null, msg.assunto, null);
   });
 }
 
@@ -27,6 +28,7 @@ function setIndividualMsgToHtml(message){
     )
   );
   $('#mensagens').listview('refresh');
+  addCalendarEvent(message.idMensagem, new Date(message.dataEnvio), null, message.assunto, null);
 }
 
 function setReplyToHtml(replies){
@@ -95,11 +97,25 @@ function cleanSchedule(){
   }
 }
 
+var idUsuario = null;
+
 function scheduleRequest(token, idUsuario){
   window.intervalId = setInterval(function(){
     console.log("buscando novas mensagens");
     sendToken(token, idUsuario);
   }, 300000);
+}
+
+function addCalendarEvent(id, start, title)
+{
+    var eventObject = {
+    title: title,
+    start: start,
+    id: id,
+    };
+
+    $('#calendar').fullCalendar('renderEvent', eventObject, true);
+    return eventObject;
 }
 
 //DB callback functions

@@ -63,6 +63,7 @@ function getCurrentToken(){
 }
 
 function getDataFromDB(idUsuario){
+  this.idUsuario = idUsuario;
   messages = [];
   db.transaction(function(tx){
       tx.executeSql("SELECT * FROM mensagens WHERE idUsuario = ?;", [idUsuario],
@@ -72,6 +73,21 @@ function getDataFromDB(idUsuario){
               messages.push(results.rows.item(i));
             };
             setMsgToHtml(messages);
+          }
+        });
+    }, errorHandler);
+}
+
+function getDataFromDBForCalendar(idUsuario){
+  $('#calendar').fullCalendar('removeEvents');
+  db.transaction(function(tx){
+      tx.executeSql("SELECT * FROM mensagens WHERE idUsuario = ?;", [idUsuario],
+        function(tx, results){
+          if (results.rows.length > 0) {
+            for (var i = 0; i < results.rows.length; i++) {
+              msg = results.rows.item(i);
+              addCalendarEvent(msg.idMensagem, new Date(msg.dataEnvio), msg.assunto);
+            };
           }
         });
     }, errorHandler);
